@@ -1,0 +1,56 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: citi-bikecaster-model # NOTE: update this with your service name
+#app: your-app-name
+#tenant: your-tenant-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: python3.6
+  timeout: 300
+  memorySize: 2880
+  stage: prod
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource: "*"
+
+plugins:
+  - serverless-python-requirements
+package:
+#  include:
+#    - include-me.py
+#    - include-me-dir/**
+  exclude:
+    - data/**
+    - dask-worker-space/**
+    - notebooks/**
+
+functions:
+  forecast:
+    handler: forecaster.handler
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    dockerSsh: true
+    useDownloadCache: true
+    useStaticCache: true
+    zip: true

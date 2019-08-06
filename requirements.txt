@@ -1,0 +1,3 @@
+boto3==1.9.199
+pandas==0.25.0
+git+git://github.com/EthanRosenthal/skits.git#egg=skits
