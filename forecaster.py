@@ -3,6 +3,7 @@ try:
 except ImportError:
   pass
 
+import gc
 from io import StringIO
 import logging
 import os
@@ -83,6 +84,7 @@ def handler(event, context):
     df = load_data_cache()
     try:
         station_id = event["station_id"]
+        logger.info(f"Generating forecast for station {station_id}")
     except KeyError:
         msg = "`station_id` must be included in event body"
         logger.exception(msg)
@@ -103,10 +105,20 @@ def handler(event, context):
     )
     y = df["num_bikes_available"].values.copy()
     X = y.reshape(-1, 1).copy()
+    del df
+    gc.collect()
 
-    model = load_model(station_id)
+    logger.info("Loading model")
+    try:
+        model = load_model(station_id)
+    except:
+        logger.exception(f"There's no model for station {station_id}")
+        return
 
+    logger.info("Predicting with model")
     series_values = np.squeeze(model.predict(X, start_idx=len(X) - 1))
+
+    logger.info("Sending prediction event")
     series_values = np.clip(series_values.astype(int), 0, None).astype("int").tolist()
     series_timestamps = pd.date_range(
         df.index[-1], periods=len(series_values) + 1, freq="5T"
