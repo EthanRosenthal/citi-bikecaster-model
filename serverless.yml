@@ -46,6 +46,9 @@ package:
 functions:
   forecast:
     handler: forecaster.handler
+    environment:
+      API_KEY: ${ssm:bikecaster-key}
+      USERNAME: bikecaster
 
 custom:
   pythonRequirements:
