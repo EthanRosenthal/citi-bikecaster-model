@@ -30,3 +30,4 @@ node_modules/
 dask-worker-space/**
 data/**
 .ipynb_checkpoints/
+.build
