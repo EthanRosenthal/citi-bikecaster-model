@@ -21,12 +21,15 @@ logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.INFO)
 
 
-def load_training_data(station_id):
+def load_training_data(station_id, min_date="2016-01-01"):
     df = dd.read_csv(TRAINING_DATA_PATH)
     df.columns = ["station_id", "last_reported", "num_bikes_available"]
     df = df[df["station_id"] == station_id].compute()
     df = df.drop(columns=["station_id"])
     df["last_reported"] = pd.to_datetime(df["last_reported"])
+
+    # Looks like there's some null / bad values in here.
+    df = df[df.last_reported >= min_date]
     df = df.set_index("last_reported").sort_index()
     df = df.resample("5T", label="right", closed="right").last().fillna(method="ffill")
     return df
@@ -47,7 +50,7 @@ def make_model():
             ('ar_features', AutoregressiveTransformer(num_lags=samples_per_week)),
         ])),
         ('post_feature_imputer', ReversibleImputer()),
-        ('regressor', LinearRegression(n_jobs=-1))
+        ('regressor', LinearRegression(n_jobs=4))
     ])
     return pipeline
 
