@@ -121,6 +121,6 @@ def post():
     return "OK"
 
 
-@app.route("/", method=["GET",])
+@app.route("/", methods=["GET",])
 def get():
     return "OK"
