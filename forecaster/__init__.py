@@ -1,5 +1,3 @@
-import os
-
 from dask.distributed import Client
 from flask import Flask
 
