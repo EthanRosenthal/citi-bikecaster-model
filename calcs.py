@@ -55,9 +55,9 @@ def post_event(station_id, series_timestamps, series_values, event_type, usernam
     }
     assert event_type in ("prediction", "outcome")
     url = f"{INSULATOR_URL}/{event_type}"
-    # response = requests.post(url, auth=(username, api_key), json=payload)
-    # if not response:
-    #     app.logger.error(f"Error posting to insulator ingest API: {response.text}")
+    response = requests.post(url, auth=(username, api_key), json=payload)
+    if not response:
+        print(f"Error posting to insulator ingest API: {response.text}")
 
 
 def make_forecast(df, station_id, username, api_key):

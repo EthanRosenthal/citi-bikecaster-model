@@ -13,6 +13,7 @@ BUCKET = "insulator-citi-bikecaster"
 USERNAME = os.environ["USERNAME"]
 API_KEY = os.environ["API_KEY"]
 
+
 @app.route("/", methods=["POST",])
 def post():
     df = dd.read_csv(f"s3://{BUCKET}/status_cache.csv").compute()
