@@ -31,3 +31,5 @@ dask-worker-space/**
 data/**
 .ipynb_checkpoints/
 .build
+models/*.pkl
+logs/*.log
