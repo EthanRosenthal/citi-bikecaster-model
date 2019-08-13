@@ -42,6 +42,8 @@ package:
     - data/**
     - dask-worker-space/**
     - notebooks/**
+    - models/**
+    - job_runs/**
 
 functions:
   forecast:
