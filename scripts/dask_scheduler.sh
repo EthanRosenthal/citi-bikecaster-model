@@ -2,4 +2,4 @@
 
 PATH=/home/ubuntu/miniconda3/envs/citi_bikecaster_model/bin/:$PATH
 
-dask-scheduler --host 192.168.0.140 --port 8786
+dask-scheduler --host localhost --port 8786
