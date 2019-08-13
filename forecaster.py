@@ -68,9 +68,9 @@ def post_event(station_id, series_timestamps, series_values, event_type):
     }
     assert event_type in ("prediction", "outcome")
     url = f"{INSULATOR_URL}/{event_type}"
-    # response = requests.post(url, auth=(USERNAME, API_KEY), json=payload)
-    # if not response:
-    #     logger.error(f"Error posting to insulator ingest API: {response.text}")
+    response = requests.post(url, auth=(USERNAME, API_KEY), json=payload)
+    if not response:
+        logger.error(f"Error posting to insulator ingest API: {response.text}")
 
 
 def handler(event, context):
