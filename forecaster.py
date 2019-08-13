@@ -32,9 +32,14 @@ def model_key(station_id):
     return f"models/station_{station_id}.pkl"
 
 
-def load_model(s3, station_id):
+def load_model(station_id):
     with s3.open(f"{BUCKET}/{model_key(station_id)}", "rb") as f:
         return pickle.loads(f.read())
+
+
+def load_local_model(station_id):
+    with open(f"models/station_{station_id}.pkl", "rb") as f:
+        return pickle.load(f)
 
 
 def ts_to_unixtime(series):
@@ -136,13 +141,17 @@ def make_forecast(s3, df, station_id, job_run):
 
     logger.info("start load model")
     try:
-        model = load_model(s3, station_id)
+        model = load_local_model(station_id)
     except:
         logger.exception(f"There's no model for station {station_id}")
         return False
 
     logger.info("Predicting with model")
-    series_values = np.squeeze(model.predict(X, start_idx=len(X) - 1))
+    try:
+        series_values = np.squeeze(model.predict(X, start_idx=len(X) - 1))
+    except:
+        logger.exception(f"Error predicting for station {station_id}")
+        return False
 
     logger.info("Sending prediction event")
     series_values = np.clip(series_values.astype(int), 0, None).astype("int").tolist()
