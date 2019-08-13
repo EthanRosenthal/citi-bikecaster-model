@@ -116,8 +116,11 @@ def post():
 
     df_future = app.dask_client.scatter(df)
     for station_id in sorted(df["station_id"].unique().tolist()):
-        # station_df = df[df["station_id"] == station_id]
         fire_and_forget(app.dask_client.submit(make_forecast, df_future, station_id))
 
     return "OK"
 
+
+@app.route("/", method=["GET",])
+def get():
+    return "OK"
