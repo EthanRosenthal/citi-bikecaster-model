@@ -3,6 +3,8 @@ from datetime import timedelta
 import pickle
 import time
 
+import dask.dataframe as dd
+from dask.distributed import worker_client
 import numpy as np
 import pandas as pd
 import requests
@@ -96,4 +98,16 @@ def make_forecast(df, station_id, username, api_key):
     series_timestamps = series_timestamps[1:]
     series_timestamps = ts_to_unixtime(series_timestamps).astype("int").tolist()
     post_event(station_id, series_timestamps, series_values, "prediction", username, api_key)
+    return True
+
+
+def pipeline(s3_path, username, api_key):
+    df = dd.read_csv(s3_path).compute()
+    df["last_reported"] = pd.to_datetime(df["last_reported"])
+    MIN_DATE = "2016-01-01"
+    df = df[df.last_reported >= MIN_DATE]
+    with worker_client() as client:
+        df_future = client.scatter(df)
+        for station_id in sorted(df["station_id"].unique().tolist()):
+            client.submit(make_forecast, df_future, station_id, username, api_key)
     return True
