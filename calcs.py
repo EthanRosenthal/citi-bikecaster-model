@@ -4,7 +4,7 @@ import pickle
 import time
 
 import dask.dataframe as dd
-from dask.distributed import worker_client
+from dask.distributed import as_completed, worker_client
 import numpy as np
 import pandas as pd
 import requests
@@ -108,6 +108,15 @@ def pipeline(s3_path, username, api_key):
     df = df[df.last_reported >= MIN_DATE]
     with worker_client() as client:
         df_future = client.scatter(df)
+        futures = []
         for station_id in sorted(df["station_id"].unique().tolist()):
-            client.submit(make_forecast, df_future, station_id, username, api_key)
+            futures.append(client.submit(make_forecast, df_future, station_id, username, api_key))
+        total = len(futures)
+        success = 0
+        for result in as_completed(futures):
+            if result.result():
+                success += 1
+                if success % 50 == 0:
+                    print(f"{success} / {total} tasks successfully completed")
+    print(f"Done. Final tally: {success} / {total} tasks successfully completed")
     return True
