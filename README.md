@@ -2,6 +2,10 @@
 
 ## Hacky Server Deployment
 
+Run `ssh-add -K` on local machine to get ssh key into keychain. This 
+allows for forwarding it when logging into the cloud instance so that 
+you can git pull, git clone, etc...
+
 ### Create environment
 
 ```commandline
