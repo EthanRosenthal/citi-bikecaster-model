@@ -2,4 +2,4 @@
 
 PATH=/home/ubuntu/miniconda3/envs/citi_bikecaster_model/bin/:$PATH
 
-USERNAME=bikecaster API_KEY=#FILL gunicorn --workers 1 --bind localhost:8000 -m 007 wsgi:app
+USERNAMES="bikecaster,some_other_one" API_KEY="#FILL,#FILL_AGAIN" gunicorn --workers 1 --bind localhost:8000 -m 007 wsgi:app
